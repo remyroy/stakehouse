@@ -8,6 +8,7 @@ import Installing from "./pages/Installing";
 import React from "react";
 import Status from "./pages/Status";
 import SystemCheck from "./pages/SystemCheck";
+import EthDocker from "./pages/EthDocker";
 import styled from "styled-components";
 
 const Container = styled.main`
@@ -29,6 +30,7 @@ const App = () => {
           <Route exact path="/installfailed" component={InstallFailed} />
           <Route exact path="/status" component={Status} />
           <Route exact path="/deposit" component={Deposit} />
+          <Route exact path="/ethdocker" component={EthDocker} />
         </Switch>
       </Container>
     </HashRouter>

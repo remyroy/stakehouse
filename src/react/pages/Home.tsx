@@ -36,7 +36,31 @@ const Content = styled.div`
   max-width: 650;
 `;
 
+const TestZone = styled.div`
+`;
+
 const StartButton = styled(Link)`
+  color: ${Black};
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 24;
+  background-color: ${Button};
+  padding: 16 24;
+  border-radius: 10%;
+  text-decoration: none;
+
+  transition: 250ms background-color ease;
+  cursor: pointer;
+  margin-top: 60;
+
+  &:hover {
+    background-color: ${ButtonHover};
+  }
+`;
+
+const TestButton = styled(Link)`
   color: ${Black};
   display: flex;
   flex-direction: row;
@@ -98,6 +122,9 @@ const Home = ({ history }: {history: History}) => {
         *Note: we use the Rocket Pool install infrastructure which runs everything in docker, more info <StyledLink onClick={sendToRocketpool}>here</StyledLink>
       </Content>
       <StartButton to="/systemcheck">Enter</StartButton>
+      <TestZone>
+        <TestButton to="/ethdocker">EthDocker Test</TestButton>
+      </TestZone>
     </Container>
   );
 };
