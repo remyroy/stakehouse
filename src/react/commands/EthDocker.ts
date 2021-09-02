@@ -1,4 +1,4 @@
-import { doesFileExist, readlink } from "./BashUtils";
+import { doesFileExist, readlink, groupId } from "./BashUtils";
 import { executeCommandInNewTerminal, executeCommandStream, executeCommandSync, executeCommandSyncReturnStdout, executeCommandWithPromptsAsync } from "./ExecuteCommand";
 
 import fs from "fs";
@@ -9,8 +9,9 @@ const ASKPASS_PATH = "src/scripts/askpass.sh";
 const APT_UPDATE_CMD = "sudo apt update -y";
 const APT_INSTALL_PREREQUISITES_CMD = "sudo apt install -y docker docker-compose git";
 const ENABLE_DOCKER_SERVICE_CMD = "sudo systemctl enable --now docker";
-const ADD_USER_DOCKER_GROUP_CMD = "sudo usermod -aG docker $USER && sudo newgrp docker";
+const ADD_USER_DOCKER_GROUP_CMD = "sudo usermod -aG docker $USER";
 const CLONE_ETH_DOCKER_CMD = "git clone https://github.com/eth2-educators/eth-docker.git ~/.eth-docker";
+const ETH_DOCKER_PULL_CMD = "cd ~/.eth-docker && git pull";
 
 type Callback = (success: boolean) => void;
 type StdoutCallback = (text: string[]) => void;
@@ -29,6 +30,8 @@ const initWithPrerequisites = async (callback: Callback, stdoutCallback: StdoutC
     callback(false);
     return;
   }
+
+  // TODO: Test if each command was done already before doing it
 
   const cliAptUpdate = await executeCommandStream(APT_UPDATE_CMD, internalStdoutCallback);
   if (cliAptUpdate != 0) {
@@ -58,15 +61,47 @@ const initWithPrerequisites = async (callback: Callback, stdoutCallback: StdoutC
     return;
   }
 
+  // TODO: Check if eth-docker is already installed/pulled
   const cliCloneEthDocker = await executeCommandStream(CLONE_ETH_DOCKER_CMD, internalStdoutCallback);
-  if (cliCloneEthDocker != 0) {
-    console.log("git clone eth-docker failed");
+
+  const cliEthDockerPull = await executeCommandStream(ETH_DOCKER_PULL_CMD, internalStdoutCallback);
+  if (cliEthDockerPull != 0) {
+    console.log("eth-docker pull failed");
     callback(false);
     return;
   }
 
+  callback(true);
+
+}
+
+const installClients = async (callback: Callback, stdoutCallback: StdoutCallback, config: Object) => {
+  // Config has be a collection of key-value from https://github.com/eth2-educators/eth-docker/blob/main/default.env
+  // It will be merged with the default values from that file so no need to specify them all
+
+  const consoleMessages: string[] = [];
+  const internalStdoutCallback = (text: string) => {
+    consoleMessages.push(text);
+    stdoutCallback(consoleMessages);
+  }
+
+  const dockergid = groupId("docker");
+  if (dockergid == -1) {
+    console.log("docker group not found");
+    callback(false);
+    return;
+  }
+
+  const spawnOptions = {
+    gid: dockergid
+  }
+
+
+
+  callback(true);
 }
 
 export {
   initWithPrerequisites,
+  installClients
 }

@@ -9,7 +9,7 @@ import { withRouter } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import { History } from "history";
-import { initWithPrerequisites } from "../commands/EthDocker";
+import { initWithPrerequisites, installClients } from "../commands/EthDocker";
 
 import styled from "styled-components";
 
@@ -37,10 +37,6 @@ const Content = styled.div`
 
 const TestButton = styled.button`
   color: ${Black};
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
   height: 24;
   background-color: ${Button};
   padding: 16 24;
@@ -87,6 +83,13 @@ const EthDocker = ({ history }: {history: History}) => {
     initWithPrerequisites(initCallback, stdoutCallback);
   }
 
+  const uiInstallClients = () => {
+    installClients(initCallback, stdoutCallback, {
+      COMPOSE_FILE: "lh-base.yml:geth.yml",
+      GRAFFITI: ""
+    });
+  }
+
   const sendToHome = () => {
     history.push("/");
   }
@@ -97,6 +100,7 @@ const EthDocker = ({ history }: {history: History}) => {
       <Content>
         <p>Test page for eth-docker integration.</p>
         <TestButton onClick={uiInitWithPrerequisites}>InitWithPrerequisites</TestButton>
+        <TestButton onClick={uiInstallClients}>InstallClients</TestButton>
       </Content>
       <StyledLink onClick={sendToHome}>Back to Home</StyledLink>
     </Container>
