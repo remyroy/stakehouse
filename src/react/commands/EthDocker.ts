@@ -9,12 +9,11 @@ const ASKPASS_PATH = "src/scripts/askpass.sh";
 const APT_UPDATE_CMD = "sudo apt update -y";
 const APT_INSTALL_PREREQUISITES_CMD = "sudo apt install -y docker docker-compose git";
 const ENABLE_DOCKER_SERVICE_CMD = "sudo systemctl enable --now docker";
-const ADD_USER_DOCKER_GROUP_CMD = "sudo usermod -aG docker $USER";
 const CLONE_ETH_DOCKER_CMD = "git clone https://github.com/eth2-educators/eth-docker.git ~/.eth-docker";
 const ETH_DOCKER_PULL_CMD = "cd ~/.eth-docker && git pull";
 const DEFAULT_ENV_FILE = "~/.eth-docker/default.env";
 const LIVE_ENV_FILE = "~/.eth-docker/.env";
-const BUILDING_CLIENTS_CMD = "cd ~/.eth-docker && docker-compose build --pull";
+const BUILDING_CLIENTS_CMD = "cd ~/.eth-docker && sudo docker-compose build --pull";
 
 type Callback = (success: boolean) => void;
 type StdoutCallback = (text: string[]) => void;
@@ -53,13 +52,6 @@ const initWithPrerequisites = async (callback: Callback, stdoutCallback: StdoutC
   const cliEnableDockerService = await executeCommandStream(ENABLE_DOCKER_SERVICE_CMD, internalStdoutCallback);
   if (cliEnableDockerService != 0) {
     console.log("enable docker service failed");
-    callback(false);
-    return;
-  }
-
-  const cliAddUserDockerGroup = await executeCommandStream(ADD_USER_DOCKER_GROUP_CMD, internalStdoutCallback);
-  if (cliAddUserDockerGroup != 0) {
-    console.log("add user to docker group failed");
     callback(false);
     return;
   }
@@ -114,6 +106,14 @@ const installClients = async (callback: Callback, stdoutCallback: StdoutCallback
 
   } catch (err) {
     console.log("Failed to read/write environment file");
+    callback(false);
+    return;
+  }
+
+  // cache sudo credentials to be used for install later
+  const passwordRc = await executeCommandStream("export SUDO_ASKPASS='" + ASKPASS_PATH + "' && sudo -A echo 'Authentication successful.'", internalStdoutCallback);
+  if (passwordRc != 0) {
+    console.log("password failed");
     callback(false);
     return;
   }
