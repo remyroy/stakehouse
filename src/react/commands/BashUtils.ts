@@ -37,10 +37,17 @@ const groupId = (group: string): number => {
   return -1;
 }
 
+const copyFile = (source: string, target: string): boolean => {
+  const cmd = "cp " + escapeArgument(source) + " " + escapeArgument(target);
+  const result = executeCommandSync(cmd);
+  return result == 0;
+}
+
 export {
   doesFileExist,
   readlink,
   which,
   groupId,
-  escapeArgument
+  escapeArgument,
+  copyFile
 };

@@ -69,7 +69,9 @@ const executeCommandSyncReturnStdout = (cmd: string): string => {
 const executeCommandStream = (cmd: string, stdoutCallback: StdoutCallback, spawnOptions: Object = {}): Promise<any> => {
   console.log("running command stream with: " + cmd);
   return new Promise((resolve, reject) => {
-    const child = spawn(cmd, Object.assign({ shell: true }, spawnOptions));
+    const cmdSpawnOptions = Object.assign({ shell: true }, spawnOptions);
+    console.log(cmdSpawnOptions);
+    const child = spawn(cmd, cmdSpawnOptions);
 
     child.stdout.on('data', (data: Buffer) => {
       stdoutCallback(data.toString());

@@ -1,8 +1,8 @@
-import { doesFileExist, readlink, groupId } from "./BashUtils";
-import { executeCommandInNewTerminal, executeCommandStream, executeCommandSync, executeCommandSyncReturnStdout, executeCommandWithPromptsAsync } from "./ExecuteCommand";
+import { groupId, copyFile } from "./BashUtils";
+import { executeCommandStream } from "./ExecuteCommand";
 
 import fs from "fs";
-import yaml from "js-yaml";
+import os from "os";
 
 const ASKPASS_PATH = "src/scripts/askpass.sh";
 
@@ -12,6 +12,9 @@ const ENABLE_DOCKER_SERVICE_CMD = "sudo systemctl enable --now docker";
 const ADD_USER_DOCKER_GROUP_CMD = "sudo usermod -aG docker $USER";
 const CLONE_ETH_DOCKER_CMD = "git clone https://github.com/eth2-educators/eth-docker.git ~/.eth-docker";
 const ETH_DOCKER_PULL_CMD = "cd ~/.eth-docker && git pull";
+const DEFAULT_ENV_FILE = "~/.eth-docker/default.env";
+const LIVE_ENV_FILE = "~/.eth-docker/.env";
+const BUILDING_CLIENTS_CMD = "cd ~/.eth-docker && docker-compose build --pull";
 
 type Callback = (success: boolean) => void;
 type StdoutCallback = (text: string[]) => void;
@@ -75,6 +78,10 @@ const initWithPrerequisites = async (callback: Callback, stdoutCallback: StdoutC
 
 }
 
+const escapeRegExp = (value: string): string => {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 const installClients = async (callback: Callback, stdoutCallback: StdoutCallback, config: Object) => {
   // Config has be a collection of key-value from https://github.com/eth2-educators/eth-docker/blob/main/default.env
   // It will be merged with the default values from that file so no need to specify them all
@@ -85,18 +92,39 @@ const installClients = async (callback: Callback, stdoutCallback: StdoutCallback
     stdoutCallback(consoleMessages);
   }
 
-  const dockergid = groupId("docker");
-  if (dockergid == -1) {
-    console.log("docker group not found");
+  // Copy default.env to .env
+  if (!copyFile(DEFAULT_ENV_FILE, LIVE_ENV_FILE)) {
+    console.log("Cannot copy environment file");
     callback(false);
     return;
   }
 
-  const spawnOptions = {
-    gid: dockergid
+  // Update default environment file with config passed here
+  try {
+    const expanded_live_env_file = LIVE_ENV_FILE.replace("~", os.homedir());
+    let envData = fs.readFileSync(expanded_live_env_file, 'utf8');
+
+    // Replace all key=value from config in envData
+    for (const [key, value] of Object.entries(config)) {
+      const kvRegex = new RegExp(escapeRegExp(key) + "=.+");
+      envData = envData.replace(kvRegex, key + "=" + value);
+    }
+
+    fs.writeFileSync(expanded_live_env_file, envData);
+
+  } catch (err) {
+    console.log("Failed to read/write environment file");
+    callback(false);
+    return;
   }
 
-
+  // Building the clients
+  const cliBuildingClients = await executeCommandStream(BUILDING_CLIENTS_CMD, internalStdoutCallback);
+  if (cliBuildingClients != 0) {
+    console.log("building clients failed");
+    callback(false);
+    return;
+  }
 
   callback(true);
 }

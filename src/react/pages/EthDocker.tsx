@@ -85,8 +85,8 @@ const EthDocker = ({ history }: {history: History}) => {
 
   const uiInstallClients = () => {
     installClients(initCallback, stdoutCallback, {
-      COMPOSE_FILE: "lh-base.yml:geth.yml",
-      GRAFFITI: ""
+      "COMPOSE_FILE": "lh-base.yml:geth.yml",
+      "GRAFFITI": ""
     });
   }
 
