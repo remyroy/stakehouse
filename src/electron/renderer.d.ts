@@ -45,14 +45,15 @@ export interface IBashUtilsAPI {
 
 export interface IEthDockerAPI {
   preInstall: (outputLogs?: OutputLogs) => Promise<boolean>,
-  install: (details: InstallDetails) => Promise<boolean>,
+  install: (details: InstallDetails, outputLogs?: OutputLogs) => Promise<boolean>,
   importKeys: (
     network: Network,
     keyStoreDirectoryPath: string,
-    keyStorePassword: string) => Promise<boolean>,
-  postInstall: (network: Network) => Promise<boolean>,
-  startNodes: (network: Network) => Promise<boolean>,
-  stopNodes: (network: Network) => Promise<boolean>,
+    keyStorePassword: string,
+    outputLogs?: OutputLogs) => Promise<boolean>,
+  postInstall: (network: Network, outputLogs?: OutputLogs) => Promise<boolean>,
+  startNodes: (network: Network, outputLogs?: OutputLogs) => Promise<boolean>,
+  stopNodes: (network: Network, outputLogs?: OutputLogs) => Promise<boolean>,
 }
 
 declare global {

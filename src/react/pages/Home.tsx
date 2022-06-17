@@ -108,33 +108,33 @@ const Home: FC<HomeProps> = (props): ReactElement => {
 
     // window.ethDocker.preInstall(consoleWrite).then(preInstallResult => {
     //   console.log(`preInstall ${preInstallResult}`);
-      /*if (preInstallResult) {
-        const installationDetails: InstallDetails = {
-          network: props.network,
-          executionClient: ExecutionClient.GETH,
-          consensusClient: ConsensusClient.LIGHTHOUSE
-        };
+    /*if (preInstallResult) {
+      const installationDetails: InstallDetails = {
+        network: props.network,
+        executionClient: ExecutionClient.GETH,
+        consensusClient: ConsensusClient.LIGHTHOUSE
+      };
 
-        window.ethDocker.install(installationDetails).then(installResult => {
-          console.log(`install ${installResult}`);
-          if (installResult) {
-            window.ethDocker.importKeys(
-              props.network,
-              '/home/remy/keys',
-              'password').then(importKeysResult => {
-                console.log(`importKeys ${importKeysResult}`);
+      window.ethDocker.install(installationDetails).then(installResult => {
+        console.log(`install ${installResult}`);
+        if (installResult) {
+          window.ethDocker.importKeys(
+            props.network,
+            '/home/remy/keys',
+            'password').then(importKeysResult => {
+              console.log(`importKeys ${importKeysResult}`);
 
-                if (importKeysResult) {
-                  window.ethDocker.postInstall(props.network).then(postInstallResult => {
-                    console.log(`postInstall ${postInstallResult}`);
-                  });
-                }
+              if (importKeysResult) {
+                window.ethDocker.postInstall(props.network).then(postInstallResult => {
+                  console.log(`postInstall ${postInstallResult}`);
+                });
+              }
 
-              });
-          }
+            });
+        }
 
-        });
-      }*/
+      });
+    }*/
     // });
 
     setEnterSelected(true);

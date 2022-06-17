@@ -283,24 +283,24 @@ export class EthDockerInstaller implements IMultiClientInstaller {
 
   async install(details: InstallDetails, outputLogs?: OutputLogs): Promise<boolean> {
     // Install and update eth-docker
-    if (!await this.installUpdateEthDockerCode(details.network)) {
+    if (!await this.installUpdateEthDockerCode(details.network, outputLogs)) {
       return false;
     }
 
     // Create .env file with all the configuration details
-    if (!await this.createEthDockerEnvFile(details)) {
+    if (!await this.createEthDockerEnvFile(details, outputLogs)) {
       return false;
     }
 
     // Build the clients
-    if (!await this.buildClients(details.network)) {
+    if (!await this.buildClients(details.network, outputLogs)) {
       return false;
     }
 
     return true;
   }
 
-  async buildClients(network: Network): Promise<boolean> {
+  async buildClients(network: Network, outputLogs?: OutputLogs): Promise<boolean> {
     const networkPath = path.join(installPath, network.toLowerCase());
     const ethDockerPath = path.join(networkPath, 'eth-docker');
 
@@ -322,7 +322,7 @@ EONG
     return true;
   }
 
-  async createEthDockerEnvFile(details: InstallDetails): Promise<boolean> {
+  async createEthDockerEnvFile(details: InstallDetails, outputLogs?: OutputLogs): Promise<boolean> {
     const networkPath = path.join(installPath, details.network.toLowerCase());
     const ethDockerPath = path.join(networkPath, 'eth-docker');
 
@@ -391,7 +391,7 @@ EONG
     return true;
   }
 
-  async installUpdateEthDockerCode(network: Network): Promise<boolean> {
+  async installUpdateEthDockerCode(network: Network, outputLogs?: OutputLogs): Promise<boolean> {
     const networkPath = path.join(installPath, network.toLowerCase());
 
     // Make sure the networkPath is a directory

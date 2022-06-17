@@ -24,23 +24,24 @@ const ethDockerInstaller = new EthDockerInstaller();
 const ethDockerPreInstall = async (outputLogs?: OutputLogs): Promise<boolean> => {
   return ethDockerInstaller.preInstall(outputLogs);
 };
-const ethDockerInstall = async (details: InstallDetails): Promise<boolean> => {
-  return ethDockerInstaller.install(details);
+const ethDockerInstall = async (details: InstallDetails, outputLogs?: OutputLogs): Promise<boolean> => {
+  return ethDockerInstaller.install(details, outputLogs);
 };
 const ethDockerImportKeys = async (
   network: Network,
   keyStoreDirectoryPath: string,
-  keyStorePassword: string): Promise<boolean> => {
-  return ethDockerInstaller.importKeys(network, keyStoreDirectoryPath, keyStorePassword);
+  keyStorePassword: string,
+  outputLogs?: OutputLogs): Promise<boolean> => {
+  return ethDockerInstaller.importKeys(network, keyStoreDirectoryPath, keyStorePassword, outputLogs);
 };
-const ethDockerPostInstall = async (network: Network): Promise<boolean> => {
-  return ethDockerInstaller.postInstall(network);
+const ethDockerPostInstall = async (network: Network, outputLogs?: OutputLogs): Promise<boolean> => {
+  return ethDockerInstaller.postInstall(network, outputLogs);
 };
-const ethDockerStartNodes = async (network: Network): Promise<boolean> => {
-  return ethDockerInstaller.startNodes(network);
+const ethDockerStartNodes = async (network: Network, outputLogs?: OutputLogs): Promise<boolean> => {
+  return ethDockerInstaller.startNodes(network, outputLogs);
 };
-const ethDockerStopNodes = async (network: Network): Promise<boolean> => {
-  return ethDockerInstaller.stopNodes(network);
+const ethDockerStopNodes = async (network: Network, outputLogs?: OutputLogs): Promise<boolean> => {
+  return ethDockerInstaller.stopNodes(network, outputLogs);
 };
 
 const ipcRendererSendClose = () => {
